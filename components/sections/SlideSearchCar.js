@@ -1,9 +1,12 @@
 'use client'
 import { useState } from "react"
 import RangeSlider from "../elements/RangeSlider"
+import { useDateContext } from "../../lib/DateContext"
 
 export default function SlideSearchCar() {
     const [activeIndex, setActiveIndex] = useState(1)
+    const { pickupDate, returnDate, setPickupDate, setReturnDate, today } = useDateContext()
+    
     const handleOnClick = (index) => {
         setActiveIndex(index)
     }
@@ -65,6 +68,51 @@ export default function SlideSearchCar() {
                                             </div>
                                         </div>
                                         <div className="form-group">
+                                            <div className="group-select">
+                                                <input 
+                                                    type="date" 
+                                                    className="nice-select date-input" 
+                                                    placeholder="Pickup Date"
+                                                    value={pickupDate}
+                                                    onChange={(e) => {
+                                                        setPickupDate(e.target.value)
+                                                        if (returnDate && e.target.value > returnDate) {
+                                                            setReturnDate('')
+                                                        }
+                                                    }}
+                                                    min={today}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px 15px',
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: '5px',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'inherit'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <div className="group-select">
+                                                <input 
+                                                    type="date" 
+                                                    className="nice-select date-input" 
+                                                    placeholder="Return Date"
+                                                    value={returnDate}
+                                                    onChange={(e) => setReturnDate(e.target.value)}
+                                                    min={pickupDate || today}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px 15px',
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: '5px',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'inherit'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
                                             <div className="widget widget-price ">
                                                 <div className="caption flex-two">
                                                     <p className="price-range">Price</p>
@@ -121,6 +169,51 @@ export default function SlideSearchCar() {
                                             </div>
                                         </div>
                                         <div className="form-group">
+                                            <div className="group-select">
+                                                <input 
+                                                    type="date" 
+                                                    className="nice-select date-input" 
+                                                    placeholder="Pickup Date"
+                                                    value={pickupDate}
+                                                    onChange={(e) => {
+                                                        setPickupDate(e.target.value)
+                                                        if (returnDate && e.target.value > returnDate) {
+                                                            setReturnDate('')
+                                                        }
+                                                    }}
+                                                    min={today}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px 15px',
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: '5px',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'inherit'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <div className="group-select">
+                                                <input 
+                                                    type="date" 
+                                                    className="nice-select date-input" 
+                                                    placeholder="Return Date"
+                                                    value={returnDate}
+                                                    onChange={(e) => setReturnDate(e.target.value)}
+                                                    min={pickupDate || today}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px 15px',
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: '5px',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'inherit'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
                                             <div className="widget widget-price ">
                                                 <div className="caption flex-two">
                                                     <p className="price-range">Price</p>
@@ -174,6 +267,51 @@ export default function SlideSearchCar() {
                                                         Technology</option>
                                                     <option data-value="C Class" className="option">C Class</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <div className="group-select">
+                                                <input 
+                                                    type="date" 
+                                                    className="nice-select date-input" 
+                                                    placeholder="Pickup Date"
+                                                    value={pickupDate}
+                                                    onChange={(e) => {
+                                                        setPickupDate(e.target.value)
+                                                        if (returnDate && e.target.value > returnDate) {
+                                                            setReturnDate('')
+                                                        }
+                                                    }}
+                                                    min={today}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px 15px',
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: '5px',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'inherit'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <div className="group-select">
+                                                <input 
+                                                    type="date" 
+                                                    className="nice-select date-input" 
+                                                    placeholder="Return Date"
+                                                    value={returnDate}
+                                                    onChange={(e) => setReturnDate(e.target.value)}
+                                                    min={pickupDate || today}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px 15px',
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: '5px',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'inherit'
+                                                    }}
+                                                />
                                             </div>
                                         </div>
                                         <div className="form-group">

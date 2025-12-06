@@ -2,10 +2,12 @@
 'use client'
 import ModalOfferPrice from "../../components/elements/ModalOfferPrice"
 import ModalTestDriver from "../../components/elements/ModalTestDriver"
+import ModalBooking from "../../components/elements/ModalBooking"
 import Layout from "../../components/layout/Layout"
 import ThumbSlider from "../../components/slider/ThumbSlider"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Autoplay, Navigation, Pagination } from "swiper/modules"
 import { Swiper, SwiperSlide } from "swiper/react"
 
@@ -36,10 +38,27 @@ const swiperOptions = {
     },
 }
 export default function ListingDetails() {
+    const searchParams = useSearchParams()
     const [isToggled4, setToggled4] = useState(false)
     const handleToggle4 = () => setToggled4(!isToggled4)
     const [isToggled5, setToggled5] = useState(false)
     const handleToggle5 = () => setToggled5(!isToggled5)
+    const [isBookingModalOpen, setBookingModalOpen] = useState(false)
+    const handleBookingModalToggle = () => setBookingModalOpen(!isBookingModalOpen)
+    
+    // Get dates from URL params
+    const pickupDate = searchParams.get('pickupDate') || ''
+    const returnDate = searchParams.get('returnDate') || ''
+    const datesSelected = pickupDate && returnDate
+    
+    // Handle Book Now button
+    const handleBookNow = () => {
+        if (!datesSelected) {
+            alert('Please select pickup and return dates to book this car')
+            return
+        }
+        setBookingModalOpen(true)
+    }
     return (
         <>
 
@@ -356,54 +375,89 @@ export default function ListingDetails() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="wrap-car-location wrap-style">
-                                            <h4 className="title">Features</h4>
-                                            <div className="listing-address">
+                                        <div className="wrap-car-location wrap-style" style={{ marginBottom: '30px' }}>
+                                            <h4 className="title">Location</h4>
+                                            <div className="listing-address" style={{ marginBottom: '15px' }}>
                                                 <svg width={22} height={30} viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M11 29.1211C7.48438 23.8477 1.33203 16.6992 1.33203 10.5469C1.33203 5.21596 5.66908 0.878908 11 0.878908C16.3309 0.878908 20.668 5.21596 20.668 10.5469C20.668 16.6992 14.5156 23.8477 11 29.1211Z" stroke="#D01818" strokeWidth={2} strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
                                                     <path d="M11 14.9414C8.57697 14.9414 6.60547 12.9699 6.60547 10.5469C6.60547 8.12385 8.57697 6.15234 11 6.15234C13.423 6.15234 15.3945 8.12385 15.3945 10.5469C15.3945 12.9699 13.423 14.9414 11 14.9414Z" stroke="#D01818" strokeWidth={2} strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                                 <p>4517 Washington Ave. Manchester, Kentucky 39495</p>
                                             </div>
-                                            <div className="map2">
-                                                <div id="map2" />
+                                            <div className="map2" style={{ height: '250px', marginTop: '15px', borderRadius: '8px', overflow: 'hidden' }}>
+                                                <iframe 
+                                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.184133682668!2d-84.51598268459418!3d37.69697997919485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8841b1b4b4b4b4b5%3A0x4b4b4b4b4b4b4b4b!2sManchester%2C%20KY%2039495!5e0!3m2!1sen!2sus!4v1678975266976!5m2!1sen!2sus" 
+                                                    height="250" 
+                                                    style={{ border: 0, width: "100%", height: "100%" }} 
+                                                    allowFullScreen 
+                                                    loading="lazy" 
+                                                    referrerPolicy="no-referrer-when-downgrade"
+                                                    title="Car Location Map"
+                                                />
                                             </div>
                                         </div>
-                                        <div className="wrap-car-calculator wrap-style">
-                                            <h4 className="title">Loan Calculator</h4>
-                                            <form action="/" id="calculator">
-                                                <div className="input-wrap">
-                                                    <fieldset>
-                                                        <label>Vehicle Price</label>
-                                                        <input type="tel" placeholder="$250000" />
-                                                    </fieldset>
-                                                    <fieldset>
-                                                        <label>Interest Rate</label>
-                                                        <input type="tel" placeholder="$250000" />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="input-wrap">
-                                                    <fieldset>
-                                                        <label>Down Payment</label>
-                                                        <input type="tel" placeholder="$250000" />
-                                                    </fieldset>
-                                                    <fieldset>
-                                                        <label>Loan Duration</label>
-                                                        <input type="tel" placeholder="$250000" />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="btn-wrap-form mt-45">
-                                                    <div className="btn-main">
-                                                        <button className="button_main_inner" type="submit">
-                                                            Calculate Payment
+                                        <div className="wrap-car-booking wrap-style" style={{ marginTop: '0' }}>
+                                            <h4 className="title">Book This Car</h4>
+                                            {datesSelected ? (
+                                                <div className="booking-info">
+                                                    <div className="booking-dates" style={{
+                                                        padding: '20px',
+                                                        backgroundColor: '#f8f9fa',
+                                                        borderRadius: '8px',
+                                                        marginBottom: '20px'
+                                                    }}>
+                                                        <div style={{ marginBottom: '10px' }}>
+                                                            <strong>Pickup Date:</strong> {new Date(pickupDate).toLocaleDateString('en-US', { 
+                                                                weekday: 'long', 
+                                                                year: 'numeric', 
+                                                                month: 'long', 
+                                                                day: 'numeric' 
+                                                            })}
+                                                        </div>
+                                                        <div>
+                                                            <strong>Return Date:</strong> {new Date(returnDate).toLocaleDateString('en-US', { 
+                                                                weekday: 'long', 
+                                                                year: 'numeric', 
+                                                                month: 'long', 
+                                                                day: 'numeric' 
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                    <div className="btn-main" style={{ width: '100%' }}>
+                                                        <button 
+                                                            className="button_main_inner" 
+                                                            onClick={handleBookNow}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '15px',
+                                                                fontSize: '16px',
+                                                                fontWeight: '600'
+                                                            }}
+                                                        >
+                                                            <span>Book Now</span>
+                                                            <i className="icon-arrow-right2" style={{ marginLeft: '10px' }} />
                                                         </button>
                                                     </div>
-                                                    <Link href="/#" className="btn-reset">
-                                                        <i className="icon-rotate-left-circular-arrow-interface-symbol-1" />
-                                                        Reset All
+                                                </div>
+                                            ) : (
+                                                <div className="booking-warning" style={{
+                                                    padding: '20px',
+                                                    backgroundColor: '#fff3cd',
+                                                    border: '1px solid #ffc107',
+                                                    borderRadius: '8px',
+                                                    color: '#856404'
+                                                }}>
+                                                    <p style={{ marginBottom: '15px' }}>
+                                                        <strong>⚠️ Please select pickup and return dates</strong> to book this car.
+                                                    </p>
+                                                    <Link href="/" className="button_main_inner" style={{
+                                                        display: 'inline-block',
+                                                        textDecoration: 'none'
+                                                    }}>
+                                                        <span>Go to Home to Select Dates</span>
                                                     </Link>
                                                 </div>
-                                            </form>
+                                            )}
                                         </div>
                                         <div className="wrap-car-review wrap-style">
                                             <h4 className="title">Customer Review</h4>
@@ -1209,6 +1263,12 @@ export default function ListingDetails() {
             </Layout>
             <ModalTestDriver isToggled4={isToggled4} handleToggle4={handleToggle4} />
             <ModalOfferPrice isToggled5={isToggled5} handleToggle5={handleToggle5} />
+            <ModalBooking 
+                isToggled={isBookingModalOpen} 
+                handleToggle={handleBookingModalToggle}
+                pickupDate={pickupDate}
+                returnDate={returnDate}
+            />
         </>
     )
 }

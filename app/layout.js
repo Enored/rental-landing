@@ -2,7 +2,7 @@
 import "/public/assets/css/magnific-popup.min.css"
 import "/public/assets/css/style.css"
 
-
+import DateProviderWrapper from '../components/providers/DateProviderWrapper'
 import { DM_Sans, Plus_Jakarta_Sans } from 'next/font/google'
 const jakarta = Plus_Jakarta_Sans({
     weight: ['300', '400', '500', '600', '700'],
@@ -31,7 +31,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-            <body className={`body counter-scroll ${dm.variable} ${jakarta.variable}`}>{children}</body>
+            <body className={`body counter-scroll ${dm.variable} ${jakarta.variable}`}>
+                <DateProviderWrapper>
+                    {children}
+                </DateProviderWrapper>
+            </body>
         </html>
     )
 }

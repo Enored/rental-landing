@@ -1,12 +1,213 @@
 'use client'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from "react"
+import { useDateContext } from "../../lib/DateContext"
 
 export default function CarListV2({ h5 }) {
+    const router = useRouter()
     const [activeIndex, setActiveIndex] = useState(1)
+    const { pickupDate, returnDate, datesSelected } = useDateContext()
+    
     const handleOnClick = (index) => {
         setActiveIndex(index)
     }
+    
+    // Helper function to build URL with date params
+    const buildListingUrl = (baseUrl) => {
+        if (!datesSelected) return '#'
+        const params = new URLSearchParams({
+            pickupDate,
+            returnDate
+        })
+        return `${baseUrl}?${params.toString()}`
+    }
+    
+    // Mock function to check car availability
+    // In a real app, this would check against actual booking data
+    const isCarAvailable = (carId) => {
+        if (!datesSelected) return false
+        
+        // Mock: Some cars are unavailable on certain dates
+        // In production, this would query a database
+        const unavailableCars = [2, 4] // Example: cars with ID 2 and 4 are unavailable
+        return !unavailableCars.includes(carId)
+    }
+    
+    // Handle navigation - only navigate if dates are selected
+    const handleNavigation = (e, url) => {
+        // Always prevent default first
+        e.preventDefault()
+        e.stopPropagation()
+        
+        if (!datesSelected) {
+            alert('Please select pickup and return dates to view car details')
+            return false
+        }
+        
+        // Only navigate if dates are selected
+        if (datesSelected && url && url !== '#') {
+            router.push(url)
+        }
+        
+        return false
+    }
+    
+    // Helper function to render a car card
+    const renderCarCard = (carId, imageSrc, title, subtitle, price, priceSale) => {
+        const available = isCarAvailable(carId)
+        const listingUrl = buildListingUrl("/listing-details")
+        const canNavigate = datesSelected && available
+        
+        const handleClick = (e) => {
+            if (!datesSelected) {
+                e.preventDefault()
+                e.stopPropagation()
+                alert('Please select pickup and return dates to view car details')
+                return false
+            }
+        }
+        
+        return (
+            <div className="col-12 col-sm-6 col-md-6 col-xl-6" key={carId}>
+                <div className="tf-car-service-v2" style={{ 
+                    opacity: datesSelected && !available ? 0.5 : 1,
+                    position: 'relative'
+                }}>
+                    {canNavigate ? (
+                        <Link 
+                            href={listingUrl} 
+                            className="image"
+                        >
+                            <div className="stm-badge-top">
+                                <div className="feature-group">
+                                    <span className="featured">Featured</span>
+                                    <span className="year">2023</span>
+                                </div>
+                            </div>
+                            <div className="thumb">
+                                <img src={imageSrc} className="img-responsive" alt="Image Car Service" />
+                            </div>
+                        </Link>
+                    ) : (
+                        <div 
+                            className="image"
+                            onClick={handleClick}
+                            onMouseDown={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                            }}
+                            style={{ 
+                                cursor: 'not-allowed'
+                            }}
+                        >
+                            <div className="stm-badge-top">
+                                <div className="feature-group">
+                                    <span className="featured">Featured</span>
+                                    <span className="year">2023</span>
+                                </div>
+                                {datesSelected && !available && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                        backgroundColor: 'red',
+                                        color: 'white',
+                                        padding: '5px 10px',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                        zIndex: 10,
+                                        fontWeight: 'bold'
+                                    }}>Unavailable</div>
+                                )}
+                                {!datesSelected && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                        backgroundColor: '#ff9800',
+                                        color: 'white',
+                                        padding: '5px 10px',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                        zIndex: 10,
+                                        fontWeight: 'bold'
+                                    }}>Select Dates</div>
+                                )}
+                            </div>
+                            <div className="thumb">
+                                <img src={imageSrc} className="img-responsive" alt="Image Car Service" />
+                            </div>
+                        </div>
+                    )}
+                    <div className="content">
+                        <span className="sub-title">{subtitle}</span>
+                        <h6 className="title">
+                            {canNavigate ? (
+                                <Link href={listingUrl}>
+                                    {title}
+                                </Link>
+                            ) : (
+                                <span 
+                                    onClick={handleClick}
+                                    onMouseDown={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                    }}
+                                    style={{ 
+                                        cursor: 'not-allowed',
+                                        color: '#999'
+                                    }}
+                                >
+                                    {title}
+                                </span>
+                            )}
+                        </h6>
+                        <div className="description">
+                            <ul>
+                                <li className="listing-information fuel">
+                                    <i className="icon-gasoline-pump-1" />
+                                    <div className="inner">
+                                        <span>Fuel type</span>
+                                        <p>Petrol</p>
+                                    </div>
+                                </li>
+                                <li className="listing-information size-engine">
+                                    <i className="icon-Group1" />
+                                    <div className="inner">
+                                        <span>Mileage</span>
+                                        <p>90 k.m</p>
+                                    </div>
+                                </li>
+                                <li className="listing-information transmission">
+                                    <i className="icon-gearbox-1" />
+                                    <div className="inner">
+                                        <span>Transmission</span>
+                                        <p>Auto</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="bottom-btn-wrap">
+                            <div className="price-group">
+                                <span className="price-sale">{priceSale}</span>
+                                <span className="price">{price}</span>
+                            </div>
+                            <div className="btn-group">
+                                <Link href="/#" className="icon-service">
+                                    <i className="icon-heart-1-1" />
+                                </Link>
+                                <Link href="/#" className="icon-service">
+                                    <i className="icon-shuffle-2-11" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+    
     return (
         <>
             <div className={`${h5 ? "widget-car-list-v2-h5" : "widget-car-list-v2"} `}>
@@ -16,6 +217,20 @@ export default function CarListV2({ h5 }) {
                             {!h5 && <span className="sub-title mb-10 wow fadeInUp">Trusted Car Delaer Service</span>}
                             <h2 className={`${h5 ? "title-section-main" : "title"} wow fadeInUp`}>{`${!h5 ? "Popular Makes by" : "Explore All Cars"}`}</h2>
                         </div>
+                        {!datesSelected && (
+                            <div style={{
+                                padding: '12px 20px',
+                                backgroundColor: '#fff3cd',
+                                border: '1px solid #ffc107',
+                                borderRadius: '5px',
+                                marginBottom: '20px',
+                                marginTop: '20px',
+                                color: '#856404',
+                                fontSize: '14px'
+                            }}>
+                                <strong>⚠️ Please select pickup and return dates in the search form above</strong> to view available cars and access car details.
+                            </div>
+                        )}
                         <ul className="nav nav-pills tab-car-service-v2 justify-content-end" id="c" role="tablist">
                             <li className="nav-item" onClick={() => handleOnClick(1)}>
                                 <button className={activeIndex == 1 ? "nav-link active" : "nav-link"}> Cadilliac</button>
@@ -38,610 +253,40 @@ export default function CarListV2({ h5 }) {
                         <div className={activeIndex == 1 ? "tab-pane fade show active" : "tab-pane fade"}>
                             {/* Widget Car Service */}
                             <div className="row">
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/car-list/car.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/car-list/car.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {renderCarCard(1, "/assets/images/car-list/car.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
+                                {renderCarCard(2, "/assets/images/car-list/car.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
                             </div>
                             {/* Widget Car Service */}
                         </div>
                         <div className={activeIndex == 2 ? "tab-pane fade show active" : "tab-pane fade"}>
                             {/* Widget Car Service */}
                             <div className="row">
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/car-list/car.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/2.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {renderCarCard(3, "/assets/images/car-list/car.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
+                                {renderCarCard(4, "/assets/images/cart-service/2.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
                             </div>
                             {/* Widget Car Service */}
                         </div>
                         <div className={activeIndex == 3 ? "tab-pane fade show active" : "tab-pane fade"}>
                             {/* Widget Car Service */}
                             <div className="row">
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/1.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/2.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {renderCarCard(5, "/assets/images/cart-service/1.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
+                                {renderCarCard(6, "/assets/images/cart-service/2.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
                             </div>
                             {/* Widget Car Service */}
                         </div>
                         <div className={activeIndex == 4 ? "tab-pane fade show active" : "tab-pane fade"}>
                             {/* Widget Car Service */}
                             <div className="row">
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/1.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/2.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {renderCarCard(7, "/assets/images/cart-service/1.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
+                                {renderCarCard(8, "/assets/images/cart-service/2.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
                             </div>
                             {/* Widget Car Service */}
                         </div>
                         <div className={activeIndex == 5 ? "tab-pane fade show active" : "tab-pane fade"}>
                             {/* Widget Car Service */}
                             <div className="row">
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/1.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-12 col-sm-6 col-md-6 col-xl-6">
-                                    <div className="tf-car-service-v2">
-                                        <Link href="/listing-details" className="image">
-                                            <div className="stm-badge-top">
-                                                <div className="feature-group">
-                                                    <span className="featured">Featured</span>
-                                                    <span className="year">2023</span>
-                                                </div>
-                                            </div>
-                                            <div className="thumb">
-                                                <img src="/assets/images/cart-service/2.jpg" className="img-responsive" alt="Image Car Service" />
-                                            </div>
-                                        </Link>
-                                        <div className="content">
-                                            <span className="sub-title">Mini Cooper 3 Similar</span>
-                                            <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
-                                            <div className="description">
-                                                <ul>
-                                                    <li className="listing-information fuel">
-                                                        <i className="icon-gasoline-pump-1" />
-                                                        <div className="inner">
-                                                            <span>Fuel type</span>
-                                                            <p>Petrol</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information size-engine">
-                                                        <i className="icon-Group1" />
-                                                        <div className="inner">
-                                                            <span>Mileage</span>
-                                                            <p>90 k.m</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="listing-information transmission">
-                                                        <i className="icon-gearbox-1" />
-                                                        <div className="inner">
-                                                            <span>Transmission</span>
-                                                            <p>Auto</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div className="bottom-btn-wrap">
-                                                <div className="price-group">
-                                                    <span className="price-sale">$3958</span>
-                                                    <span className="price">$7894</span>
-                                                </div>
-                                                <div className="btn-group">
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-heart-1-1" />
-                                                    </Link>
-                                                    <Link href="/#" className="icon-service">
-                                                        <i className="icon-shuffle-2-11" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {renderCarCard(9, "/assets/images/cart-service/1.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
+                                {renderCarCard(10, "/assets/images/cart-service/2.jpg", "Chevrolet Suburban 2021 mo", "Mini Cooper 3 Similar", "$7894", "$3958")}
                             </div>
                             {/* Widget Car Service */}
                         </div>

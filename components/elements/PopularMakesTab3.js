@@ -1,10 +1,74 @@
 'use client'
 import Link from "next/link"
+import { useRouter } from 'next/navigation'
 import { useState } from "react"
+import { useDateContext } from "../../lib/DateContext"
+
 export default function PopularMakesTab3() {
+    const router = useRouter()
     const [activeIndex, setActiveIndex] = useState(1)
+    const { pickupDate, returnDate, datesSelected } = useDateContext()
+    
     const handleOnClick = (index) => {
         setActiveIndex(index)
+    }
+    
+    // Helper function to build URL with date params
+    const buildListingUrl = (baseUrl) => {
+        if (!datesSelected) return '#'
+        const params = new URLSearchParams({
+            pickupDate,
+            returnDate
+        })
+        return `${baseUrl}?${params.toString()}`
+    }
+    
+    // Handle navigation - only navigate if dates are selected
+    const handleNavigation = (e, url) => {
+        e.preventDefault()
+        e.stopPropagation()
+        
+        if (!datesSelected) {
+            alert('Please select pickup and return dates to view car details')
+            return false
+        }
+        
+        if (datesSelected && url && url !== '#') {
+            router.push(url)
+        }
+        
+        return false
+    }
+    
+    // Helper function to render View Details link/button
+    const renderViewDetailsLink = () => {
+        const listingUrl = buildListingUrl("/listing-details")
+        const canNavigate = datesSelected
+        
+        if (canNavigate) {
+            return (
+                <a 
+                    className="more-link" 
+                    href={listingUrl}
+                    onClick={(e) => handleNavigation(e, listingUrl)}
+                >
+                    <span>View details</span>
+                    <i className="icon-arrow-right2" />
+                </a>
+            )
+        } else {
+            return (
+                <a 
+                    className="more-link" 
+                    href="#"
+                    onClick={(e) => handleNavigation(e, listingUrl)}
+                    style={{ cursor: 'not-allowed', opacity: 0.6 }}
+                >
+                    <span>View details</span>
+                    <i className="icon-arrow-right2" />
+                </a>
+            )
+        }
     }
     return (
         <>
@@ -13,6 +77,20 @@ export default function PopularMakesTab3() {
                     <span className="sub-title mb-6 wow fadeInUp">Trusted Car DeAler Service</span>
                     <h2 className="title wow fadeInUp">Explore all Vehicles</h2>
                 </div>
+                {!datesSelected && (
+                    <div style={{
+                        padding: '12px 20px',
+                        backgroundColor: '#fff3cd',
+                        border: '1px solid #ffc107',
+                        borderRadius: '5px',
+                        marginBottom: '20px',
+                        marginTop: '20px',
+                        color: '#856404',
+                        fontSize: '14px'
+                    }}>
+                        <strong>⚠️ Please select pickup and return dates in the search form above</strong> to view available cars and access car details.
+                    </div>
+                )}
                 <ul className="nav nav-pills justify-content-end" id="pills-tab-service" role="tablist">
                     <li className="nav-item" onClick={() => handleOnClick(1)}>
                         <button className={activeIndex == 1 ? "nav-link active" : "nav-link"}>
@@ -31,7 +109,12 @@ export default function PopularMakesTab3() {
                     {/* Widget Car Service */}
                     <div className="car-list-item">
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -78,7 +161,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details" /><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -107,10 +198,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -124,7 +212,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -171,7 +264,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details" /><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -200,10 +301,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -217,7 +315,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -264,7 +367,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details" /><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -293,10 +404,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -310,7 +418,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -357,7 +470,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details" /><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -386,10 +507,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -403,7 +521,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -450,7 +573,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details" /><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -479,10 +610,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -496,7 +624,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -543,7 +676,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -572,10 +713,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -595,7 +733,12 @@ export default function PopularMakesTab3() {
                     {/* Widget Car Service */}
                     <div className="car-list-item">
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -642,7 +785,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -671,10 +822,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -688,7 +836,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -735,7 +888,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -764,10 +925,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -781,7 +939,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -828,7 +991,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -857,10 +1028,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -874,7 +1042,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -921,7 +1094,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -950,10 +1131,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -967,7 +1145,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1014,7 +1197,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1043,10 +1234,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1060,7 +1248,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1107,7 +1300,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1136,10 +1337,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1159,7 +1357,12 @@ export default function PopularMakesTab3() {
                     {/* Widget Car Service */}
                     <div className="car-list-item">
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1206,7 +1409,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1235,10 +1446,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1252,7 +1460,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1299,7 +1512,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1328,10 +1549,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1345,7 +1563,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1392,7 +1615,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1421,10 +1652,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1438,7 +1666,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1485,7 +1718,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1514,10 +1755,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1531,7 +1769,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1578,7 +1821,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1607,10 +1858,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
@@ -1624,7 +1872,12 @@ export default function PopularMakesTab3() {
                             </div>
                         </div>
                         <div className="tf-car-service">
-                            <Link href="/listing-details" className="image">
+                            <Link 
+                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                className="image"
+                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                            >
                                 <div className="stm-badge-top">
                                     <div className="feature">
                                         <span>Featured</span>
@@ -1671,7 +1924,15 @@ export default function PopularMakesTab3() {
                             </Link>
                             <div className="content">
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
-                                <h6 className="title"><Link href="/listing-details">Chevrolet Suburban 2021 mo</Link></h6>
+                                <h6 className="title">
+                                    <Link 
+                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
+                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
+                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                    >
+                                        Chevrolet Suburban 2021 mo
+                                    </Link>
+                                </h6>
                                 <span className="price">$27,000</span>
                                 <div className="description">
                                     <ul>
@@ -1700,10 +1961,7 @@ export default function PopularMakesTab3() {
                                 </div>
                                 <div className="bottom-btn-wrap">
                                     <div className="btn-read-more">
-                                        <a className="more-link" href="/listing-details">
-                                            <span>View details</span>
-                                            <i className="icon-arrow-right2" />
-                                        </a>
+                                        {renderViewDetailsLink()}
                                     </div>
                                     <div className="btn-group">
                                         <a href="#" className="icon-service">
