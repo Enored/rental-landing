@@ -35,15 +35,15 @@ export default function Home() {
       <Logo />
 
       {/* Car Listings & Counters */}
-      <CarListV2 />
-      <CounterCar />
+      {/* <CarListV2 />
+      <CounterCar /> */}
 
       {/* Testimonials & Promotional Banner */}
       <TestimonialCar />
-      <CarBannerV1 />
+      {/* <CarBannerV1 /> */}
 
       {/* Blog & Updates */}
-      <CarBlogV1 />
+      {/* <CarBlogV1 /> */}
     </Layout>
   );
 }

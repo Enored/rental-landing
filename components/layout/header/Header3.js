@@ -57,15 +57,15 @@ export default function Header3({ scroll, isMobileMenu, handleMobileMenu, handle
                                                     <li>
                                                         <Link href="/car-list">Cars</Link>
                                                     </li>
-                                                    <li className="dropdown2">
+                                                    {/* <li className="dropdown2">
                                                         <Link href="/#">Page</Link>
                                                         <ul>
                                                             <li><Link href="/dashboard/customer">Dashboard_C</Link></li>
                                                             <li><Link href="/dashboard/seller">Dashboard_S</Link></li>
                                                         </ul>
-                                                    </li>
-                                                    <li><Link href="/blog">News </Link>
-                                                    </li>
+                                                    </li> */}
+                                                    {/* <li><Link href="/blog">News </Link>
+                                                    </li> */}
                                                     <li><Link href="/contact-us">Contact us </Link>
                                                     </li>
                                                 </ul>
@@ -74,16 +74,15 @@ export default function Header3({ scroll, isMobileMenu, handleMobileMenu, handle
                                         {/* Main Menu End*/}
                                     </div>
                                     <div className="header-account flex align-center">
-                                        <div className="register ml--18">
+                                        {/* <div className="register ml--18">
                                             <div className="flex align-center">
                                                 <a data-bs-toggle="modal" onClick={handleToggle1} role="button">Register</a>
                                                 <a data-bs-toggle="modal" onClick={handleToggle2} role="button">Login</a>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="flat-bt-top sc-btn-top ml--20 ">
                                             <Link className="btn-icon-list" href="/car-list">
-                                                <span>Listing Yours</span>
-                                                <i className="icon-add-button-1" />
+                                                <span>RYVO LISTINGS</span>
                                             </Link>
                                         </div>
                                     </div>
