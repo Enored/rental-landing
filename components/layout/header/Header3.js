@@ -107,7 +107,7 @@ export default function Header3({ scroll, isMobileMenu, handleMobileMenu, handle
                             <div className="menu-outer">
                                 <MobileMenu />
                             </div>
-                            <div className="help-bar-mobie login-box">
+                            {/* <div className="help-bar-mobie login-box">
                                 <a data-bs-toggle="modal" onClick={handleToggle1} role="button" className="fw-7 category"><i className="icon-user" />Login</a>
                             </div>
                             <div className="help-bar-mobie search">
@@ -118,7 +118,7 @@ export default function Header3({ scroll, isMobileMenu, handleMobileMenu, handle
                             </div>
                             <div className="help-bar-mobie cart">
                                 <Link href="/#" className="fw-7 font-2"><i className="icon-Vector" />Cart</Link>
-                            </div>
+                            </div> */}
                         </div>
                     </nav>
                 </div>
