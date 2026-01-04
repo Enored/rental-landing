@@ -34,27 +34,17 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
           chmod 600 ~/.ssh/known_hosts
           if [ -n "${{ secrets.SSH_PASSPHRASE }}" ]; then
             sudo apt-get update -qq
-            sudo apt-get install -y -qq sshpass
+            sudo apt-get install -y -qq sshpass expect
             echo "${{ secrets.SSH_PASSPHRASE }}" > ~/.ssh/passphrase
             chmod 600 ~/.ssh/passphrase
           fi
 
-      - name: Test SSH connection
-        timeout-minutes: 2
-        run: |
-          SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ServerAliveInterval=60 -o ServerAliveCountMax=3"
-          if [ -n "${{ secrets.SSH_PASSPHRASE }}" ]; then
-            timeout 30 sshpass -f ~/.ssh/passphrase ssh $SSH_OPTS -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'echo "SSH connection successful"'
-          else
-            timeout 30 ssh $SSH_OPTS -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'echo "SSH connection successful"'
-          fi
-
       - name: Deploy to VPS
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
           cat > /tmp/deploy.sh << 'SCRIPT'
           set -e
@@ -93,10 +83,14 @@ jobs:
           echo "Deployment completed successfully"
           SCRIPT
           
-          SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ServerAliveInterval=60 -o ServerAliveCountMax=3"
+          SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o BatchMode=yes"
           
+          echo "Connecting to VPS..."
           if [ -n "${{ secrets.SSH_PASSPHRASE }}" ]; then
-            timeout 600 sshpass -f ~/.ssh/passphrase ssh $SSH_OPTS -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' < /tmp/deploy.sh
+            sshpass -f ~/.ssh/passphrase ssh $SSH_OPTS -i ~/.ssh/deploy_key -v ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' < /tmp/deploy.sh || {
+              echo "SSH connection failed. Attempting without verbose mode..."
+              sshpass -f ~/.ssh/passphrase ssh $SSH_OPTS -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' < /tmp/deploy.sh
+            }
           else
-            timeout 600 ssh $SSH_OPTS -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' < /tmp/deploy.sh
+            ssh $SSH_OPTS -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' < /tmp/deploy.sh
           fi
