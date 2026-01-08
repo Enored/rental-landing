@@ -1,5 +1,6 @@
 import Link from "next/link"
 import MobileMenu from "../MobileMenu"
+import styles from "./Header3.module.css"
 export default function Header3({ scroll, isMobileMenu, handleMobileMenu, handleToggle1, isToggled1, handleToggle2, isToggled2, handleToggle3, isToggled3 }) {
     return (
         <>
@@ -86,7 +87,7 @@ export default function Header3({ scroll, isMobileMenu, handleMobileMenu, handle
                                             </Link>
                                         </div>
                                     </div>
-                                    <div className="mobile-nav-toggler mobile-button" onClick={handleMobileMenu}>
+                                    <div className={styles['mobile-nav-toggler']} onClick={handleMobileMenu}>
                                         <span />
                                     </div>
                                 </div>

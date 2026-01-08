@@ -1,0 +1,48 @@
+.mobile-nav-toggler {
+  display: none;
+}
+
+@media (max-width: 1120px) {
+  .mobile-nav-toggler {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    z-index: 1100;
+    position: absolute;
+    top: 18px;
+    right: 27px;
+  }
+  .mobile-nav-toggler span {
+    display: block;
+    background: #000 !important;
+    height: 3px;
+    width: 28px;
+    border-radius: 2px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .mobile-nav-toggler span:before,
+  .mobile-nav-toggler span:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 28px;
+    height: 3px;
+    background: #000 !important;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    display: block;
+  }
+  .mobile-nav-toggler span:before {
+    top: -9px;
+  }
+
+  .mobile-nav-toggler span:after {
+    top: 9px;
+  }
+}
