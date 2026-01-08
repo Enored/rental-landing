@@ -45,12 +45,12 @@ export default function ListingDetails() {
     const handleToggle5 = () => setToggled5(!isToggled5)
     const [isBookingModalOpen, setBookingModalOpen] = useState(false)
     const handleBookingModalToggle = () => setBookingModalOpen(!isBookingModalOpen)
-    
+
     // Get dates from URL params
     const pickupDate = searchParams.get('pickupDate') || ''
     const returnDate = searchParams.get('returnDate') || ''
     const datesSelected = pickupDate && returnDate
-    
+
     // Handle Book Now button
     const handleBookNow = () => {
         if (!datesSelected) {
@@ -69,7 +69,7 @@ export default function ListingDetails() {
                             <div className="breakcrumb">
                                 <div className="title-breakcrumb">
                                     <Link className="home" href="/">Home</Link>
-                                    <span>Property Listing</span>
+                                    <span>Listing Details</span>
                                 </div>
                             </div>
                         </div>
@@ -128,6 +128,26 @@ export default function ListingDetails() {
                                 <div className="col-lg-12">
                                     <div className="gallary-property-details">
                                         <ThumbSlider />
+                                        <div className="driver-price-wrap mt-20 d-lg-none">
+                                            <button
+                                                className="button_main_inner"
+                                                onClick={handleBookNow}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '15px',
+                                                    fontSize: '16px',
+                                                    fontWeight: '600',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    border: 'none',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Book Now
+                                                <i className="icon-arrow-right2" style={{ marginLeft: '10px' }} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -385,12 +405,12 @@ export default function ListingDetails() {
                                                 <p>4517 Washington Ave. Manchester, Kentucky 39495</p>
                                             </div>
                                             <div className="map2" style={{ height: '250px', marginTop: '15px', borderRadius: '8px', overflow: 'hidden' }}>
-                                                <iframe 
-                                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.184133682668!2d-84.51598268459418!3d37.69697997919485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8841b1b4b4b4b4b5%3A0x4b4b4b4b4b4b4b4b!2sManchester%2C%20KY%2039495!5e0!3m2!1sen!2sus!4v1678975266976!5m2!1sen!2sus" 
-                                                    height="250" 
-                                                    style={{ border: 0, width: "100%", height: "100%" }} 
-                                                    allowFullScreen 
-                                                    loading="lazy" 
+                                                <iframe
+                                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.184133682668!2d-84.51598268459418!3d37.69697997919485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8841b1b4b4b4b4b5%3A0x4b4b4b4b4b4b4b4b!2sManchester%2C%20KY%2039495!5e0!3m2!1sen!2sus!4v1678975266976!5m2!1sen!2sus"
+                                                    height="250"
+                                                    style={{ border: 0, width: "100%", height: "100%" }}
+                                                    allowFullScreen
+                                                    loading="lazy"
                                                     referrerPolicy="no-referrer-when-downgrade"
                                                     title="Car Location Map"
                                                 />
@@ -407,25 +427,25 @@ export default function ListingDetails() {
                                                         marginBottom: '20px'
                                                     }}>
                                                         <div style={{ marginBottom: '10px' }}>
-                                                            <strong>Pickup Date:</strong> {new Date(pickupDate).toLocaleDateString('en-US', { 
-                                                                weekday: 'long', 
-                                                                year: 'numeric', 
-                                                                month: 'long', 
-                                                                day: 'numeric' 
+                                                            <strong>Pickup Date:</strong> {new Date(pickupDate).toLocaleDateString('en-US', {
+                                                                weekday: 'long',
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
                                                             })}
                                                         </div>
                                                         <div>
-                                                            <strong>Return Date:</strong> {new Date(returnDate).toLocaleDateString('en-US', { 
-                                                                weekday: 'long', 
-                                                                year: 'numeric', 
-                                                                month: 'long', 
-                                                                day: 'numeric' 
+                                                            <strong>Return Date:</strong> {new Date(returnDate).toLocaleDateString('en-US', {
+                                                                weekday: 'long',
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
                                                             })}
                                                         </div>
                                                     </div>
                                                     <div className="btn-main" style={{ width: '100%' }}>
-                                                        <button 
-                                                            className="button_main_inner" 
+                                                        <button
+                                                            className="button_main_inner"
                                                             onClick={handleBookNow}
                                                             style={{
                                                                 width: '100%',
@@ -689,14 +709,24 @@ export default function ListingDetails() {
                                 </div>
                                 <div className="col-lg-4 col-md-12">
                                     <div className="driver-price-wrap mb-40">
-                                        <a className="test-driver mb-16" data-bs-toggle="modal" onClick={handleToggle4} role="button">
-                                            Schedule Test Driver
-                                            <i className="icon-steering-wheel-1" />
-                                        </a>
-                                        <a className="offer-price" data-bs-toggle="modal" onClick={handleToggle5} role="button">
-                                            Make An Offer Price
-                                            <i className="icon-Group-12" />
-                                        </a>
+                                        <button
+                                            className="button_main_inner"
+                                            onClick={handleBookNow}
+                                            style={{
+                                                width: '100%',
+                                                padding: '15px',
+                                                fontSize: '16px',
+                                                fontWeight: '600',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                border: 'none',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Book Now
+                                            <i className="icon-arrow-right2" style={{ marginLeft: '10px' }} />
+                                        </button>
                                     </div>
                                     <div className="author-contact-listing-wrap">
                                         <div className="author-contact-wrap">
@@ -1263,8 +1293,8 @@ export default function ListingDetails() {
             </Layout>
             <ModalTestDriver isToggled4={isToggled4} handleToggle4={handleToggle4} />
             <ModalOfferPrice isToggled5={isToggled5} handleToggle5={handleToggle5} />
-            <ModalBooking 
-                isToggled={isBookingModalOpen} 
+            <ModalBooking
+                isToggled={isBookingModalOpen}
                 handleToggle={handleBookingModalToggle}
                 pickupDate={pickupDate}
                 returnDate={returnDate}
