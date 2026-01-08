@@ -23,53 +23,52 @@ export default function PopularMakesTab3() {
         return `${baseUrl}?${params.toString()}`
     }
     
-    // Handle navigation - only navigate if dates are selected
-    const handleNavigation = (e, url) => {
-        e.preventDefault()
-        e.stopPropagation()
-        
+    // Toast notification for missing date range
+    const showDateToast = () => {
+        const container = document.getElementById('date-toast-container-pm3');
+        if (!container) return;
+        // Remove any existing toast
+        container.innerHTML = '';
+        const toast = document.createElement('div');
+        toast.style.background = '#222';
+        toast.style.color = '#fff';
+        toast.style.padding = '16px 28px';
+        toast.style.borderRadius = '8px';
+        toast.style.boxShadow = '0 2px 12px rgba(0,0,0,0.15)';
+        toast.style.fontSize = '16px';
+        toast.style.fontWeight = 'bold';
+        toast.style.marginBottom = '10px';
+        toast.style.pointerEvents = 'auto';
+        toast.textContent = '⚠️ Please select pickup and return dates to view car details.';
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => container.innerHTML = '', 400);
+        }, 3000);
+    };
+
+    // Handle navigation - always allow, but show toast if dates not selected
+    const handleNavigation = (e) => {
         if (!datesSelected) {
-            alert('Please select pickup and return dates to view car details')
-            return false
+            showDateToast();
         }
-        
-        if (datesSelected && url && url !== '#') {
-            router.push(url)
-        }
-        
-        return false
-    }
+        // Always allow navigation
+    };
     
     // Helper function to render View Details link/button
     const renderViewDetailsLink = () => {
-        const listingUrl = buildListingUrl("/listing-details")
-        const canNavigate = datesSelected
-        
-        if (canNavigate) {
-            return (
-                <a 
-                    className="more-link" 
-                    href={listingUrl}
-                    onClick={(e) => handleNavigation(e, listingUrl)}
-                >
-                    <span>View details</span>
-                    <i className="icon-arrow-right2" />
-                </a>
-            )
-        } else {
-            return (
-                <a 
-                    className="more-link" 
-                    href="#"
-                    onClick={(e) => handleNavigation(e, listingUrl)}
-                    style={{ cursor: 'not-allowed', opacity: 0.6 }}
-                >
-                    <span>View details</span>
-                    <i className="icon-arrow-right2" />
-                </a>
-            )
-        }
-    }
+        const listingUrl = buildListingUrl("/listing-details");
+        return (
+            <a
+                className="more-link"
+                href={listingUrl}
+                onClick={handleNavigation}
+            >
+                <span>View details</span>
+                <i className="icon-arrow-right2" />
+            </a>
+        );
+    };
     return (
         <>
             <div className="header-section tab-car-service">
@@ -77,20 +76,14 @@ export default function PopularMakesTab3() {
                     <span className="sub-title mb-6 wow fadeInUp">Trusted Car DeAler Service</span>
                     <h2 className="title wow fadeInUp">Explore all Vehicles</h2>
                 </div>
-                {!datesSelected && (
-                    <div style={{
-                        padding: '12px 20px',
-                        backgroundColor: '#fff3cd',
-                        border: '1px solid #ffc107',
-                        borderRadius: '5px',
-                        marginBottom: '20px',
-                        marginTop: '20px',
-                        color: '#856404',
-                        fontSize: '14px'
-                    }}>
-                        <strong>⚠️ Please select pickup and return dates in the search form above</strong> to view available cars and access car details.
-                    </div>
-                )}
+                {/* Side alert notification for missing date range */}
+                <div id="date-toast-container-pm3" style={{
+                    position: 'fixed',
+                    bottom: '30px',
+                    right: '30px',
+                    zIndex: 9999,
+                    pointerEvents: 'none'
+                }} />
                 <ul className="nav nav-pills justify-content-end" id="pills-tab-service" role="tablist">
                     <li className="nav-item" onClick={() => handleOnClick(1)}>
                         <button className={activeIndex == 1 ? "nav-link active" : "nav-link"}>
@@ -110,10 +103,9 @@ export default function PopularMakesTab3() {
                     <div className="car-list-item">
                         <div className="tf-car-service">
                             <Link 
-                                href={datesSelected ? buildListingUrl("/listing-details") : '#'} 
+                                href={buildListingUrl("/listing-details")}
                                 className="image"
-                                onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
-                                style={{ cursor: datesSelected ? 'pointer' : 'not-allowed' }}
+                                onClick={handleNavigation}
                             >
                                 <div className="stm-badge-top">
                                     <div className="feature">
@@ -163,9 +155,8 @@ export default function PopularMakesTab3() {
                                 <span className="sub-title">Mini Cooper 3 Similar</span>
                                 <h6 className="title">
                                     <Link 
-                                        href={datesSelected ? buildListingUrl("/listing-details") : '#'}
-                                        onClick={(e) => !datesSelected && handleNavigation(e, "/listing-details")}
-                                        style={{ cursor: datesSelected ? 'pointer' : 'not-allowed', color: datesSelected ? 'inherit' : '#999' }}
+                                        href={buildListingUrl("/listing-details")}
+                                        onClick={handleNavigation}
                                     >
                                         Chevrolet Suburban 2021 mo
                                     </Link>

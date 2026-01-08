@@ -41,8 +41,8 @@ export default function CarListV2({ h5 }) {
         e.stopPropagation()
         
         if (!datesSelected) {
-            alert('Please select pickup and return dates to view car details')
-            return false
+            showDateToast();
+            return false;
         }
         
         // Only navigate if dates are selected
@@ -61,10 +61,10 @@ export default function CarListV2({ h5 }) {
         
         const handleClick = (e) => {
             if (!datesSelected) {
-                e.preventDefault()
-                e.stopPropagation()
-                alert('Please select pickup and return dates to view car details')
-                return false
+                e.preventDefault();
+                e.stopPropagation();
+                showDateToast();
+                return false;
             }
         }
         
@@ -120,20 +120,7 @@ export default function CarListV2({ h5 }) {
                                         fontWeight: 'bold'
                                     }}>Unavailable</div>
                                 )}
-                                {!datesSelected && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: '10px',
-                                        right: '10px',
-                                        backgroundColor: '#ff9800',
-                                        color: 'white',
-                                        padding: '5px 10px',
-                                        borderRadius: '4px',
-                                        fontSize: '12px',
-                                        zIndex: 10,
-                                        fontWeight: 'bold'
-                                    }}>Select Dates</div>
-                                )}
+                                {/* Removed yellow badge for missing dates */}
                             </div>
                             <div className="thumb">
                                 <img src={imageSrc} className="img-responsive" alt="Image Car Service" />
@@ -208,6 +195,30 @@ export default function CarListV2({ h5 }) {
         )
     }
     
+    // Toast notification for missing date range
+    const showDateToast = () => {
+        const container = document.getElementById('date-toast-container');
+        if (!container) return;
+        // Remove any existing toast
+        container.innerHTML = '';
+        const toast = document.createElement('div');
+        toast.style.background = '#222';
+        toast.style.color = '#fff';
+        toast.style.padding = '16px 28px';
+        toast.style.borderRadius = '8px';
+        toast.style.boxShadow = '0 2px 12px rgba(0,0,0,0.15)';
+        toast.style.fontSize = '16px';
+        toast.style.fontWeight = 'bold';
+        toast.style.marginBottom = '10px';
+        toast.style.pointerEvents = 'auto';
+        toast.textContent = '⚠️ Please select pickup and return dates to view car details.';
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => container.innerHTML = '', 400);
+        }, 3000);
+    };
+
     return (
         <>
             <div className={`${h5 ? "widget-car-list-v2-h5" : "widget-car-list-v2"} `}>
@@ -217,20 +228,14 @@ export default function CarListV2({ h5 }) {
                             {!h5 && <span className="sub-title mb-10 wow fadeInUp">Trusted Car Delaer Service</span>}
                             <h2 className={`${h5 ? "title-section-main" : "title"} wow fadeInUp`}>{`${!h5 ? "Popular Makes by" : "Explore All Cars"}`}</h2>
                         </div>
-                        {!datesSelected && (
-                            <div style={{
-                                padding: '12px 20px',
-                                backgroundColor: '#fff3cd',
-                                border: '1px solid #ffc107',
-                                borderRadius: '5px',
-                                marginBottom: '20px',
-                                marginTop: '20px',
-                                color: '#856404',
-                                fontSize: '14px'
-                            }}>
-                                <strong>⚠️ Please select pickup and return dates in the search form above</strong> to view available cars and access car details.
-                            </div>
-                        )}
+                        {/* Side alert notification for missing date range */}
+                        <div id="date-toast-container" style={{
+                            position: 'fixed',
+                            top: '30px',
+                            right: '30px',
+                            zIndex: 9999,
+                            pointerEvents: 'none'
+                        }} />
                         <ul className="nav nav-pills tab-car-service-v2 justify-content-end" id="c" role="tablist">
                             <li className="nav-item" onClick={() => handleOnClick(1)}>
                                 <button className={activeIndex == 1 ? "nav-link active" : "nav-link"}> Cadilliac</button>
